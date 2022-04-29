@@ -15,7 +15,7 @@ interface AdapterInterface
      * @param array $options
      * @return mixed
      */
-    public function uploadFile(array $options);
+    public function uploadFile(array $options = []);
 
     /**
      * 上传服务端文件
