@@ -22,13 +22,13 @@ return [
         // 阿里云对象存储
         'oss'          => [
             'adapter'         => \Jzh\Upload\Adapter\OssAdapter::class,
-            'accessKeyId'     => 'LTAI5tFrQ4Gud5CXuQCKQ4MG',
-            'accessKeySecret' => 'BVwPheCcogivdvzZlNV704t7o0RNJ3',
-            'bucket'          => 'keke-pro',
+            'accessKeyId'     => 'xxxxxxxxxxxxx',
+            'accessKeySecret' => 'xxxxxxxxxxxxx',
+            'bucket'          => 'webman',
             'dirname'         => function () {
                 return 'upload';
             },
-            'domain'          => 'https://img.keke.yxue8.cn',
+            'domain'          => 'http://webman.oss.com',
             'endpoint'        => 'oss-cn-shenzhen.aliyuncs.com',
             'algo'            => 'sha1',
         ],
