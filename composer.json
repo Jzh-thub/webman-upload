@@ -1,0 +1,18 @@
+{
+  "name": "jzh/upload",
+  "description": "webman upload plugin",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": ">=7.2",
+    "qcloud/cos-sdk-v5": "^2.5",
+    "aliyuncs/oss-sdk-php": "^2.4",
+    "qiniu/php-sdk": "^7.5",
+    "qcloud_sts/qcloud-sts-sdk": "^3.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Jzh\\Upload\\": "src"
+    }
+  }
+}
