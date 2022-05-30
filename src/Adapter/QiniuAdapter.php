@@ -143,7 +143,7 @@ class QiniuAdapter extends AdapterAbstract
      * 获取七牛云上传密钥
      * @return array
      */
-    public function getTempKeys(): array
+    public function getTempKeys(string $dir = ""): array
     {
         $token  = $this->getUploadToken();
         $domain = $this->config['domain'];

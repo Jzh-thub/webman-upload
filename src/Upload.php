@@ -46,7 +46,7 @@ class Upload
      * @param bool        $_is_file_upload
      * @return mixed
      */
-    public static function config(string $storage = null, bool $_is_file_upload = true):AdapterInterface
+    public static function config(string $storage = null, bool $_is_file_upload = true): AdapterInterface
     {
         $config  = config('plugin.jzh.upload.app.storage');
         $storage = $storage ?: $config['default'];
@@ -59,5 +59,15 @@ class Upload
                 '_is_file_upload' => $_is_file_upload,
             ]
         ));
+    }
+
+    /**
+     * @param $name
+     * @param $arguments
+     * @return mixed
+     */
+    public static function __callStatic($name, $arguments)
+    {
+        return static::config()->{$name}(... $arguments);
     }
 }
