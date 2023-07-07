@@ -207,4 +207,5 @@ abstract class AdapterAbstract implements AdapterInterface
             throw new UploadException('总文件大小已超出系统最大限制：' . $this->totalLimit);
         }
     }
+
 }

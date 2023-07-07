@@ -42,23 +42,30 @@ class Upload
 
 
     /**
-     * @param string|null $storage
-     * @param bool        $_is_file_upload
-     * @return mixed
+     * 上传
+     * @param string|null $storage 存储方式
+     * @param bool $_is_file_upload 是否是文件（默认是）
+     * @param array $option 其他参数(single_limit/total_limit/nums/include/exclude/dirname)
+     * @return AdapterInterface
      */
-    public static function config(string $storage = null, bool $_is_file_upload = true): AdapterInterface
+    public static function config(string $storage = null, bool $_is_file_upload = true, array $option = []): AdapterInterface
     {
-        $config  = config('plugin.jzh.upload.app.storage');
+        $config = config('plugin.jzh.upload.app.storage');
+
         $storage = $storage ?: $config['default'];
         if (!isset($config[$storage]) || empty($config[$storage]['adapter'])) {
             throw new UploadException('对应的adapter不存在');
         }
-        return new $config[$storage]['adapter'](array_merge(
-            $config[$storage],
-            [
-                '_is_file_upload' => $_is_file_upload,
-            ]
-        ));
+
+        $initOption = array_merge($config[$storage], ['_is_file_upload' => $_is_file_upload]);
+        if (isset($option['single_limit']) && $option['single_limit']) $initOption['single_limit'] = $option['single_limit'];
+        if (isset($option['total_limit']) && $option['total_limit']) $initOption['total_limit'] = $option['total_limit'];
+        if (isset($option['nums']) && $option['nums']) $initOption['nums'] = $option['nums'];
+        if (isset($option['include']) && $option['include']) $initOption['include'] = $option['include'];
+        if (isset($option['exclude']) && $option['exclude']) $initOption['exclude'] = $option['exclude'];
+        if (isset($option['dirname']) && $option['dirname']) $initOption['dirname'] = $option['dirname'];
+        return new $config[$storage]['adapter']($initOption);
+
     }
 
     /**
