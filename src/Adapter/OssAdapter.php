@@ -54,6 +54,7 @@ class OssAdapter extends AdapterAbstract
                     'size'        => $file->getSize(),
                     'mime_type'   => $file->getUploadMineType(),
                     'extension'   => $file->getUploadExtension(),
+                    'storage_mode'=>'OSS'
                 ];
                 $upload   = $this->getInstance()->uploadFile($this->config['bucket'], $object, $file->getPathname());
                 if (!isset($upload['info']) && 200 != $upload['info']['http_code']) {

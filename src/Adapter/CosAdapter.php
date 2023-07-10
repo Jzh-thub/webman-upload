@@ -60,6 +60,7 @@ class CosAdapter extends AdapterAbstract
                     'size'        => $file->getSize(),
                     'mime_type'   => $file->getUploadMineType(),
                     'extension'   => $file->getUploadExtension(),
+                    'storage_mode'=>'COS'
                 ];
                 $this->getInstance()->putObject([
                     'Bucket' => $this->config['bucket'],

@@ -36,6 +36,7 @@ class LocalAdapter extends AdapterAbstract
                 'size'        => $file->getSize(),
                 'mime_type'   => $file->getUploadMineType(),
                 'extension'   => $file->getUploadExtension(),
+                'storage_mode'=>'LOCAL'
             ];
             $file->move($savePath);
             array_push($result, $temp);

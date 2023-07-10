@@ -35,7 +35,7 @@ class QiniuAdapter extends AdapterAbstract
     public function getUploadToken(): string
     {
         if ($this->uploadToken) {
-            $auth              = new Auth($this->config['accessKey'], $this->config['secretKey']);
+            $auth = new Auth($this->config['accessKey'], $this->config['secretKey']);
             $this->uploadToken = $auth->uploadToken($this->config['bucket']);
         }
 
@@ -54,17 +54,18 @@ class QiniuAdapter extends AdapterAbstract
             foreach ($this->files as $key => $file) {
                 $uniqueId = hash_file($this->algo, $file->getPathname());
                 $saveName = $uniqueId . '.' . $file->getUploadExtension();
-                $object   = $this->config['dirname'] . $this->dirSeparator . $saveName;
-                $temp     = [
-                    'key'         => $key,
+                $object = $this->config['dirname'] . $this->dirSeparator . $saveName;
+                $temp = [
+                    'key' => $key,
                     'origin_name' => $file->getUploadName(),
-                    'save_name'   => $saveName,
-                    'save_path'   => $object,
-                    'url'         => $this->config['domain'] . $this->dirSeparator . $object,
-                    'unique_id'   => $uniqueId,
-                    'size'        => $file->getSize(),
-                    'mime_type'   => $file->getUploadMineType(),
-                    'extension'   => $file->getUploadExtension(),
+                    'save_name' => $saveName,
+                    'save_path' => $object,
+                    'url' => $this->config['domain'] . $this->dirSeparator . $object,
+                    'unique_id' => $uniqueId,
+                    'size' => $file->getSize(),
+                    'mime_type' => $file->getUploadMineType(),
+                    'extension' => $file->getUploadExtension(),
+                    'storage_mode' => 'QINIU'
                 ];
                 list($ret, $err) = $this->getInstance()->putFile($this->getUploadToken(), $object, $file->getPathname());
                 if (!empty($err)) {
@@ -94,15 +95,15 @@ class QiniuAdapter extends AdapterAbstract
         }
 
         $uniqueId = hash_file($this->algo, $file->getPathname());
-        $object   = $this->config['dirname'] . $this->dirSeparator . $uniqueId . '.' . $file->getExtension();
+        $object = $this->config['dirname'] . $this->dirSeparator . $uniqueId . '.' . $file->getExtension();
 
         $result = [
             'origin_name' => $file->getFilename(),
-            'save_path'   => $object,
-            'url'         => $this->config['domain'] . $this->dirSeparator . $object,
-            'unique_id'   => $uniqueId,
-            'size'        => $file->getSize(),
-            'extension'   => $file->getExtension(),
+            'save_path' => $object,
+            'url' => $this->config['domain'] . $this->dirSeparator . $object,
+            'unique_id' => $uniqueId,
+            'size' => $file->getSize(),
+            'extension' => $file->getExtension(),
         ];
 
         list($ret, $err) = $this->getInstance()->putFile($this->getUploadToken(), $object, $file->getPathname());
@@ -118,23 +119,23 @@ class QiniuAdapter extends AdapterAbstract
      */
     public function uploadBase64(string $base64, string $extension = 'png'): array
     {
-        $base64   = explode(',', $base64);
+        $base64 = explode(',', $base64);
         $uniqueId = date('YmdHis') . uniqid();
-        $object   = $this->config['dirname'] . $this->dirSeparator . $uniqueId . '.' . $extension;
+        $object = $this->config['dirname'] . $this->dirSeparator . $uniqueId . '.' . $extension;
 
         list($ret, $err) = $this->getInstance()->put($this->getUploadToken(), $object, base64_decode($base64[1]));
         if (!empty($err)) {
             throw new UploadException((string)$err);
         }
 
-        $imgLen   = strlen($base64['1']);
+        $imgLen = strlen($base64['1']);
         $fileSize = $imgLen - ($imgLen / 8) * 2;
 
         return [
             'save_path' => $object,
-            'url'       => $this->config['domain'] . $this->dirSeparator . $object,
+            'url' => $this->config['domain'] . $this->dirSeparator . $object,
             'unique_id' => $uniqueId,
-            'size'      => $fileSize,
+            'size' => $fileSize,
             'extension' => $extension,
         ];
     }
@@ -145,9 +146,9 @@ class QiniuAdapter extends AdapterAbstract
      */
     public function getTempKeys(string $dir = ""): array
     {
-        $token  = $this->getUploadToken();
+        $token = $this->getUploadToken();
         $domain = $this->config['domain'];
-        $type   = 'QINIU';
+        $type = 'QINIU';
         return compact('token', 'domain', 'type');
     }
 }
