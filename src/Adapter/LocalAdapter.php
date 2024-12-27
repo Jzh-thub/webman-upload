@@ -15,7 +15,7 @@ class LocalAdapter extends AdapterAbstract
      */
     public function uploadFile(array $options = []): array
     {
-        $result   = [];
+        $result = [];
         $basePath = $this->config['root'] . $this->config['dirname'] . DIRECTORY_SEPARATOR;
         if (!$this->createDir($basePath)) {
             throw new UploadException('文件夹创建失败，请核查是否有对应权限。');
@@ -23,20 +23,21 @@ class LocalAdapter extends AdapterAbstract
 
         $baseUrl = $this->config['domain'] . $this->config['uri'] . str_replace(DIRECTORY_SEPARATOR, '/', $this->config['dirname']) . DIRECTORY_SEPARATOR;
         foreach ($this->files as $key => $file) {
-            $uniqueId     = hash_file($this->algo, $file->getPathname());
-            $saveFilename = $uniqueId . '.' . $file->getUploadExtension();
-            $savePath     = $basePath . $saveFilename;
-            $temp         = [
-                'key'         => $key,
+            $uniqueId = hash_file($this->algo, $file->getPathname());
+//            $saveFilename = $uniqueId . '.' . $file->getUploadExtension();
+            $saveFilename = $file->getUploadName();
+            $savePath = $basePath . $saveFilename;
+            $temp = [
+                'key' => $key,
                 'origin_name' => $file->getUploadName(),
-                'save_name'   => $saveFilename,
-                'save_path'   => $savePath,
-                'url'         => $baseUrl . $saveFilename,
-                'unique_id'   => $uniqueId,
-                'size'        => $file->getSize(),
-                'mime_type'   => $file->getUploadMineType(),
-                'extension'   => $file->getUploadExtension(),
-                'storage_mode'=>'LOCAL'
+                'save_name' => $saveFilename,
+                'save_path' => $savePath,
+                'url' => $baseUrl . $saveFilename,
+                'unique_id' => $uniqueId,
+                'size' => $file->getSize(),
+                'mime_type' => $file->getUploadMineType(),
+                'extension' => $file->getUploadExtension(),
+                'storage_mode' => 'LOCAL'
             ];
             $file->move($savePath);
             array_push($result, $temp);
