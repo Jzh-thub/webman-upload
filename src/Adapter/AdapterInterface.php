@@ -22,7 +22,7 @@ interface AdapterInterface
      * @param string $file_path
      * @return mixed
      */
-    public function uploadServerFile(string $file_path);
+    public function uploadServerFile(string $file_path, string $dir = "");
 
 
     /**

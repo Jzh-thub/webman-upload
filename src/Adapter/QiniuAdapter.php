@@ -87,7 +87,7 @@ class QiniuAdapter extends AdapterAbstract
      * @return array
      * @throws \Exception
      */
-    public function uploadServerFile(string $file_path): array
+    public function uploadServerFile(string $file_path, string $dir = ''): array
     {
         $file = new \SplFileInfo($file_path);
         if (!$file->isFile()) {
@@ -95,7 +95,8 @@ class QiniuAdapter extends AdapterAbstract
         }
 
         $uniqueId = hash_file($this->algo, $file->getPathname());
-        $object = $this->config['dirname'] . $this->dirSeparator . $uniqueId . '.' . $file->getExtension();
+        $dir = $dir ? $dir : $this->config['dirname'];
+        $object = $dir . $this->dirSeparator . $uniqueId . '.' . $file->getExtension();
 
         $result = [
             'origin_name' => $file->getFilename(),

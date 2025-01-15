@@ -43,26 +43,26 @@ class OssAdapter extends AdapterAbstract
             foreach ($this->files as $key => $file) {
                 $uniqueId = hash_file($this->algo, $file->getPathname());
                 $saveName = $uniqueId . '.' . $file->getUploadExtension();
-                $object   = $this->config['dirname'] . $this->dirSeparator . $saveName;
-                $temp     = [
-                    'key'         => $key,
+                $object = $this->config['dirname'] . $this->dirSeparator . $saveName;
+                $temp = [
+                    'key' => $key,
                     'origin_name' => $file->getUploadName(),
-                    'save_name'   => $saveName,
-                    'save_path'   => $object,
-                    'url'         => $this->config['domain'] . $this->dirSeparator . $object,
-                    'unique_id'   => $uniqueId,
-                    'size'        => $file->getSize(),
-                    'mime_type'   => $file->getUploadMineType(),
-                    'extension'   => $file->getUploadExtension(),
-                    'storage_mode'=>'OSS'
+                    'save_name' => $saveName,
+                    'save_path' => $object,
+                    'url' => $this->config['domain'] . $this->dirSeparator . $object,
+                    'unique_id' => $uniqueId,
+                    'size' => $file->getSize(),
+                    'mime_type' => $file->getUploadMineType(),
+                    'extension' => $file->getUploadExtension(),
+                    'storage_mode' => 'OSS'
                 ];
-                $upload   = $this->getInstance()->uploadFile($this->config['bucket'], $object, $file->getPathname());
+                $upload = $this->getInstance()->uploadFile($this->config['bucket'], $object, $file->getPathname());
                 if (!isset($upload['info']) && 200 != $upload['info']['http_code']) {
                     throw new UploadException((string)$upload);
                 }
                 array_push($result, $temp);
             }
-        } catch (Throwable | OssException $exception) {
+        } catch (Throwable|OssException $exception) {
             throw new UploadException($exception->getMessage());
         }
 
@@ -77,9 +77,9 @@ class OssAdapter extends AdapterAbstract
      */
     public function uploadBase64(string $base64, string $extension = 'png')
     {
-        $base64   = explode(',', $base64);
+        $base64 = explode(',', $base64);
         $uniqueId = date('YmdHis') . uniqid();
-        $object   = $this->config['dirname'] . $this->dirSeparator . $uniqueId . '.' . $extension;
+        $object = $this->config['dirname'] . $this->dirSeparator . $uniqueId . '.' . $extension;
 
         try {
             $result = $this->getInstance()->putObject($this->config['bucket'], $object, base64_decode($base64[1]));
@@ -89,14 +89,14 @@ class OssAdapter extends AdapterAbstract
         } catch (OssException $e) {
             return $this->setError(false, $e->getMessage());
         }
-        $imgLen   = strlen($base64['1']);
+        $imgLen = strlen($base64['1']);
         $fileSize = $imgLen - ($imgLen / 8) * 2;
 
         return [
             'save_path' => $object,
-            'url'       => $this->config['domain'] . $this->dirSeparator . $object,
+            'url' => $this->config['domain'] . $this->dirSeparator . $object,
             'unique_id' => $uniqueId,
-            'size'      => $fileSize,
+            'size' => $fileSize,
             'extension' => $extension,
         ];
     }
@@ -107,7 +107,7 @@ class OssAdapter extends AdapterAbstract
      * @return array
      * @throws OssException
      */
-    public function uploadServerFile(string $file_path): array
+    public function uploadServerFile(string $file_path, string $dir = ''): array
     {
         $file = new \SplFileInfo($file_path);
         if (!$file->isFile()) {
@@ -115,15 +115,16 @@ class OssAdapter extends AdapterAbstract
         }
 
         $uniqueId = hash_file($this->algo, $file->getPathname());
-        $object   = $this->config['dirname'] . $this->dirSeparator . $uniqueId . '.' . $file->getExtension();
+        $dir = $dir ? $dir : $this->config['dirname'];
+        $object = $dir . $this->dirSeparator . $uniqueId . '.' . $file->getExtension();
 
         $result = [
             'origin_name' => $file->getFilename(),//getRealPath
-            'save_path'   => $object,
-            'url'         => $this->config['domain'] . $this->dirSeparator . $object,
-            'unique_id'   => $uniqueId,
-            'size'        => $file->getSize(),
-            'extension'   => $file->getExtension(),
+            'save_path' => $object,
+            'url' => $this->config['domain'] . $this->dirSeparator . $object,
+            'unique_id' => $uniqueId,
+            'size' => $file->getSize(),
+            'extension' => $file->getExtension(),
         ];
         $upload = $this->getInstance()->uploadFile($this->config['bucket'], $object, $file->getRealPath());
         if (!isset($upload['info']) && 200 != $upload['info']['http_code']) {
@@ -142,12 +143,12 @@ class OssAdapter extends AdapterAbstract
     public function getTempKeys(string $dir = '', string $callbackUrl = ''): array
     {
         $base64CallbackBody = base64_encode(json_encode([
-            'callbackUrl'      => $callbackUrl,
-            'callbackBody'     => 'filename=${object}&size=${size}&mimeType=${mimeType}&height=${imageInfo.height}&width=${imageInfo.width}',
+            'callbackUrl' => $callbackUrl,
+            'callbackBody' => 'filename=${object}&size=${size}&mimeType=${mimeType}&height=${imageInfo.height}&width=${imageInfo.width}',
             'callbackBodyType' => "application/x-www-form-urlencoded"
         ]));
-        $dir                = $dir ?: $this->config['dirname'];
-        $policy             = json_encode([
+        $dir = $dir ?: $this->config['dirname'];
+        $policy = json_encode([
             'expiration' => $this->gmtIso8601(time() + 30),
             'conditions' =>
                 [
@@ -155,18 +156,18 @@ class OssAdapter extends AdapterAbstract
                     [0 => 'starts-with', 1 => '$key', 2 => $dir]
                 ]
         ]);
-        $base64Policy       = base64_encode($policy);
+        $base64Policy = base64_encode($policy);
 
         $signature = base64_encode(hash_hmac('sha1', $base64Policy, $this->config['accessKeySecret'], true));
         return [
-            'accessid'  => $this->config['accessKeyId'],
-            'host'      => $this->config['domain'],
-            'policy'    => $base64Policy,
+            'accessid' => $this->config['accessKeyId'],
+            'host' => $this->config['domain'],
+            'policy' => $base64Policy,
             'signature' => $signature,
-            'expire'    => time() + 30,
-            'callback'  => $base64CallbackBody,
-            'dir'       => $dir,
-            'type'      => 'OSS'
+            'expire' => time() + 30,
+            'callback' => $base64CallbackBody,
+            'dir' => $dir,
+            'type' => 'OSS'
         ];
     }
 
@@ -178,10 +179,10 @@ class OssAdapter extends AdapterAbstract
      */
     protected function gmtIso8601($time)
     {
-        $dtStr      = date("c", $time);
+        $dtStr = date("c", $time);
         $mydatetime = new \DateTime($dtStr);
         $expiration = $mydatetime->format(\DateTime::ISO8601);
-        $pos        = strpos($expiration, '+');
+        $pos = strpos($expiration, '+');
         $expiration = substr($expiration, 0, $pos);
         return $expiration . "Z";
     }

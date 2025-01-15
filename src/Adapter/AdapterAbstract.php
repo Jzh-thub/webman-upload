@@ -75,15 +75,15 @@ abstract class AdapterAbstract implements AdapterInterface
      */
     public function __construct(array $config = [])
     {
-        $this->dirSeparator  = \DIRECTORY_SEPARATOR === '\\' ? '/' : DIRECTORY_SEPARATOR;
+        $this->dirSeparator = \DIRECTORY_SEPARATOR === '\\' ? '/' : DIRECTORY_SEPARATOR;
         $this->_isFileUpload = $config['_is_file_upload'] ?? true;
         if ($this->_isFileUpload) {
-            $this->files       = request()->file();
-            $this->includes    = [];
-            $this->excludes    = [];
+            $this->files = request()->file();
+            $this->includes = [];
+            $this->excludes = [];
             $this->singleLimit = 0;
-            $this->totalLimit  = 0;
-            $this->nums        = 0;
+            $this->totalLimit = 0;
+            $this->nums = 0;
             $this->loadConfig($config);
             $this->verify();
         } else {
@@ -105,7 +105,7 @@ abstract class AdapterAbstract implements AdapterInterface
      * @param string $file_path
      * @return bool|array
      */
-    public function uploadServerFile(string $file_path)
+    public function uploadServerFile(string $file_path, string $dir = "")
     {
         return $this->setError(false, '暂不支持');
     }
@@ -124,14 +124,14 @@ abstract class AdapterAbstract implements AdapterInterface
      */
     protected function loadConfig(array $config)
     {
-        $defaultConfig     = config('plugin.jzh.upload.app.storage');
-        $this->includes    = $config['include'] ?? $defaultConfig['include'];
-        $this->excludes    = $config['exclude'] ?? $defaultConfig['exclude'];
+        $defaultConfig = config('plugin.jzh.upload.app.storage');
+        $this->includes = $config['include'] ?? $defaultConfig['include'];
+        $this->excludes = $config['exclude'] ?? $defaultConfig['exclude'];
         $this->singleLimit = $config['single_limit'] ?? $defaultConfig['single_limit'];
-        $this->totalLimit  = $config['total_limit'] ?? $defaultConfig['total_limit'];
-        $this->nums        = $config['nums'] ?? $defaultConfig['nums'];
-        $this->algo        = $config['algo'] ?? $this->algo;
-        $this->config      = $config;
+        $this->totalLimit = $config['total_limit'] ?? $defaultConfig['total_limit'];
+        $this->nums = $config['nums'] ?? $defaultConfig['nums'];
+        $this->algo = $config['algo'] ?? $this->algo;
+        $this->config = $config;
         if (is_callable($this->config['dirname'])) {
             $this->config['dirname'] = (string)$this->config['dirname']() ?: $this->config['dirname'];
         }

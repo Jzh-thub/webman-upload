@@ -27,10 +27,10 @@ class CosAdapter extends AdapterAbstract
     {
         if (is_null($this->instance)) {
             $this->instance = new Client([
-                'region'      => $this->config['region'],
-                'schema'      => 'https',
+                'region' => $this->config['region'],
+                'schema' => 'https',
                 'credentials' => [
-                    'secretId'  => $this->config['secretId'],
+                    'secretId' => $this->config['secretId'],
                     'secretKey' => $this->config['secretKey'],
                 ],
             ]);
@@ -49,27 +49,27 @@ class CosAdapter extends AdapterAbstract
             foreach ($this->files as $key => $file) {
                 $uniqueId = hash_file($this->algo, $file->getPathname());
                 $saveName = $uniqueId . '.' . $file->getUploadExtension();
-                $object   = $this->config['dirname'] . $this->dirSeparator . $saveName;
-                $temp     = [
-                    'key'         => $key,
+                $object = $this->config['dirname'] . $this->dirSeparator . $saveName;
+                $temp = [
+                    'key' => $key,
                     'origin_name' => $file->getUploadName(),
-                    'save_name'   => $saveName,
-                    'save_path'   => $object,
-                    'url'         => $this->config['domain'] . $this->dirSeparator . $object,
-                    'unique_id'   => $uniqueId,
-                    'size'        => $file->getSize(),
-                    'mime_type'   => $file->getUploadMineType(),
-                    'extension'   => $file->getUploadExtension(),
-                    'storage_mode'=>'COS'
+                    'save_name' => $saveName,
+                    'save_path' => $object,
+                    'url' => $this->config['domain'] . $this->dirSeparator . $object,
+                    'unique_id' => $uniqueId,
+                    'size' => $file->getSize(),
+                    'mime_type' => $file->getUploadMineType(),
+                    'extension' => $file->getUploadExtension(),
+                    'storage_mode' => 'COS'
                 ];
                 $this->getInstance()->putObject([
                     'Bucket' => $this->config['bucket'],
-                    'Key'    => $object,
-                    'Body'   => fopen($file->getPathname(), 'rb'),
+                    'Key' => $object,
+                    'Body' => fopen($file->getPathname(), 'rb'),
                 ]);
                 array_push($result, $temp);
             }
-        } catch (\Throwable | CosException $exception) {
+        } catch (\Throwable|CosException $exception) {
             throw new UploadException($exception->getMessage());
         }
 
@@ -81,7 +81,7 @@ class CosAdapter extends AdapterAbstract
      * @param string $file_path
      * @return array
      */
-    public function uploadServerFile(string $file_path): array
+    public function uploadServerFile(string $file_path, string $dir = ''): array
     {
         $file = new \SplFileInfo($file_path);
         if (!$file->isFile()) {
@@ -89,21 +89,22 @@ class CosAdapter extends AdapterAbstract
         }
 
         $uniqueId = hash_file($this->algo, $file->getPathname());
-        $object   = $this->config['dirname'] . $this->dirSeparator . $uniqueId . '.' . $file->getExtension();
+        $dir = $dir ? $dir : $this->config['dirname'];
+        $object = $dir . $this->dirSeparator . $uniqueId . '.' . $file->getExtension();
 
         $result = [
             'origin_name' => $file->getFilename(),
-            'save_path'   => $object,
-            'url'         => $this->config['domain'] . $this->dirSeparator . $object,
-            'unique_id'   => $uniqueId,
-            'size'        => $file->getSize(),
-            'extension'   => $file->getExtension(),
+            'save_path' => $object,
+            'url' => $this->config['domain'] . $this->dirSeparator . $object,
+            'unique_id' => $uniqueId,
+            'size' => $file->getSize(),
+            'extension' => $file->getExtension(),
         ];
 
         $this->getInstance()->putObject([
             'Bucket' => $this->config['bucket'],
-            'Key'    => $object,
-            'Body'   => fopen($file->getPathname(), 'rb'),
+            'Key' => $object,
+            'Body' => fopen($file->getPathname(), 'rb'),
         ]);
 
         return $result;
@@ -117,24 +118,24 @@ class CosAdapter extends AdapterAbstract
      */
     public function uploadBase64(string $base64, string $extension = 'png')
     {
-        $base64   = explode(',', $base64);
+        $base64 = explode(',', $base64);
         $uniqueId = date('YmdHis') . uniqid();
-        $object   = $this->config['dirname'] . $this->dirSeparator . $uniqueId . '.' . $extension;
+        $object = $this->config['dirname'] . $this->dirSeparator . $uniqueId . '.' . $extension;
 
         $this->getInstance()->putObject([
             'Bucket' => $this->config['bucket'],
-            'Key'    => $object,
-            'Body'   => base64_decode($base64[1]),
+            'Key' => $object,
+            'Body' => base64_decode($base64[1]),
         ]);
 
-        $imgLen   = strlen($base64['1']);
+        $imgLen = strlen($base64['1']);
         $fileSize = $imgLen - ($imgLen / 8) * 2;
 
         return [
             'save_path' => $object,
-            'url'       => $this->config['domain'] . $this->dirSeparator . $object,
+            'url' => $this->config['domain'] . $this->dirSeparator . $object,
             'unique_id' => $uniqueId,
-            'size'      => $fileSize,
+            'size' => $fileSize,
             'extension' => $extension,
         ];
     }
@@ -148,19 +149,19 @@ class CosAdapter extends AdapterAbstract
     public function getTempKeys(string $dir = ""): array
     {
 
-        $sts    = new Sts();
+        $sts = new Sts();
         $config = [
-            'url'             => 'https://sts.tencentcloudapi.com/',
-            'domain'          => 'sts.tencentcloudapi.com',
-            'proxy'           => '',
-            'secretId'        => $this->config['secretId'],      // 固定密钥
-            'secretKey'       => $this->config['secretKey'],     // 固定密钥
-            'bucket'          => $this->config['bucket'],        // 换成你的 bucket
-            'region'          => $this->config['region'],        // 换成 bucket 所在园区
+            'url' => 'https://sts.tencentcloudapi.com/',
+            'domain' => 'sts.tencentcloudapi.com',
+            'proxy' => '',
+            'secretId' => $this->config['secretId'],      // 固定密钥
+            'secretKey' => $this->config['secretKey'],     // 固定密钥
+            'bucket' => $this->config['bucket'],        // 换成你的 bucket
+            'region' => $this->config['region'],        // 换成 bucket 所在园区
             'durationSeconds' => 1800,                           // 密钥有效期
-            'allowPrefix'     => '*',                            // 这里改成允许的路径前缀，可以根据自己网站的用户登录态判断允许上传的具体路径，例子： a.jpg 或者 a/* 或者 * (使用通配符*存在重大安全风险, 请谨慎评估使用)
+            'allowPrefix' => '*',                            // 这里改成允许的路径前缀，可以根据自己网站的用户登录态判断允许上传的具体路径，例子： a.jpg 或者 a/* 或者 * (使用通配符*存在重大安全风险, 请谨慎评估使用)
             // 密钥的权限列表。简单上传和分片需要以下的权限，其他权限列表请看 https://cloud.tencent.com/document/product/436/31923
-            'allowActions'    => [
+            'allowActions' => [
                 // 简单上传
                 'name/cos:PutObject',
                 'name/cos:PostObject',
@@ -173,9 +174,9 @@ class CosAdapter extends AdapterAbstract
             ]
         ];
         // 获取临时密钥，计算签名
-        $result           = $sts->getTempKeys($config);
-        $result['url']    = $this->config['domain'] . '/';
-        $result['type']   = 'COS';
+        $result = $sts->getTempKeys($config);
+        $result['url'] = $this->config['domain'] . '/';
+        $result['type'] = 'COS';
         $result['bucket'] = $this->config['bucket'];
         $result['region'] = $this->config['region'];
         return $result;
