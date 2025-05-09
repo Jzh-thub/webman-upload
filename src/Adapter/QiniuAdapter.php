@@ -62,7 +62,7 @@ class QiniuAdapter extends AdapterAbstract
                     'url' => $this->config['domain'] . $this->dirSeparator . $object,
                     'unique_id' => $uniqueId,
                     'size' => $file->getSize(),
-                    'mime_type' => $file->getUploadMineType(),
+                    'mime_type' => $file->getUploadMimeType(),
                     'extension' => $file->getUploadExtension(),
                     'storage_mode' => 'QINIU'
                 ];
@@ -149,6 +149,6 @@ class QiniuAdapter extends AdapterAbstract
         $token = $this->getUploadToken();
         $domain = $this->config['domain'];
         $type = 'QINIU';
-        return compact('token', 'domain', 'type');
+        return compact('token', 'domain', 'type', 'dir');
     }
 }

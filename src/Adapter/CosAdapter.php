@@ -58,7 +58,7 @@ class CosAdapter extends AdapterAbstract
                     'url' => $this->config['domain'] . $this->dirSeparator . $object,
                     'unique_id' => $uniqueId,
                     'size' => $file->getSize(),
-                    'mime_type' => $file->getUploadMineType(),
+                    'mime_type' => $file->getUploadMimeType(),
                     'extension' => $file->getUploadExtension(),
                     'storage_mode' => 'COS'
                 ];

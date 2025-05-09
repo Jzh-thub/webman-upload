@@ -35,7 +35,7 @@ class LocalAdapter extends AdapterAbstract
                 'url' => $baseUrl . $saveFilename,
                 'unique_id' => $uniqueId,
                 'size' => $file->getSize(),
-                'mime_type' => $file->getUploadMineType(),
+                'mime_type' => $file->getUploadMimeType(),
                 'extension' => $file->getUploadExtension(),
                 'storage_mode' => 'LOCAL'
             ];
